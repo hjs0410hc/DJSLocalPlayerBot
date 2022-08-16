@@ -1,14 +1,15 @@
 {
-  "name": "discordjstest",
-  "version": "1.0.0",
-  "description": "test for discord.js",
+  "name": "djslocalplayerbot",
+  "version": "1.0.1",
+  "description": "Local Music Player for Discord (BOT)",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon index.js"
+    "dev": "nodemon index.js",
+    "start": "node index.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/hjs0410hc/discordjstest.git"
+    "url": "git+https://github.com/hjs0410hc/DJSLocalPlayerBot.git"
   },
   "keywords": [
     "discord"
@@ -16,9 +17,9 @@
   "author": "hjs0410hc",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/hjs0410hc/discordjstest/issues"
+    "url": "https://github.com/hjs0410hc/DJSLocalPlayerBot/issues"
   },
-  "homepage": "https://github.com/hjs0410hc/discordjstest#readme",
+  "homepage": "https://github.com/hjs0410hc/DJSLocalPlayerBot#readme",
   "dependencies": {
     "@discordjs/opus": "^0.8.0",
     "@discordjs/rest": "^1.0.1",

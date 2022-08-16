@@ -1,4 +1,4 @@
-const { createAudioPlayer,createAudioResource,joinVoiceChannel,AudioPlayerError,AudioPlayerStatus,AudioResource,VoiceConnection,getVoiceConnection,VoiceConnectionStatus } = require('@discordjs/voice');
+const { createAudioPlayer,createAudioResource,joinVoiceChannel,AudioPlayerStatus,getVoiceConnection } = require('@discordjs/voice');
 const {ActivityType} = require('discord.js');
 const fs = require('node:fs');
 const path = require('node:path');
@@ -62,10 +62,6 @@ const MusicCommandList = [
       {
         name: 'leave',
         description: '음성 채널 나가기'
-      },
-      {
-        name: 'vcinfo',
-        description: 'voiceConnectionInfo'
       },
       {
         name: 'volume',
@@ -202,12 +198,6 @@ MusicCommands.set('leave',async(interaction)=>{
     interaction.client.user.setActivity("");
     await interaction.reply('ℹ 음성 채널 나감: '+interaction.member.voice.channel.name)
     
-});
-MusicCommands.set('vcinfo',async(interaction)=>{
-    const voiceConnection = getVoiceConnection(interaction.guildId)
-    console.log(voiceConnection);
-    console.log(voiceConnection._state.subscription.player);
-    await interaction.reply('vcinfo sent into console')
 });
 MusicCommands.set('volume',async(interaction)=>{
     const wantVolume = interaction.options.getInteger('vol')
