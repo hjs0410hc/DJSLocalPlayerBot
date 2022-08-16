@@ -1,0 +1,35 @@
+{
+  "name": "discordjstest",
+  "version": "1.0.0",
+  "description": "test for discord.js",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hjs0410hc/discordjstest.git"
+  },
+  "keywords": [
+    "discord"
+  ],
+  "author": "hjs0410hc",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hjs0410hc/discordjstest/issues"
+  },
+  "homepage": "https://github.com/hjs0410hc/discordjstest#readme",
+  "dependencies": {
+    "@discordjs/opus": "^0.8.0",
+    "@discordjs/rest": "^1.0.1",
+    "@discordjs/voice": "^0.11.0",
+    "bufferutil": "^4.0.6",
+    "discord-api-types": "^0.37.2",
+    "discord.js": "^14.2.0",
+    "dotenv": "^16.0.1",
+    "erlpack": "^0.1.4",
+    "libsodium-wrappers": "^0.7.10",
+    "utf-8-validate": "^5.0.9",
+    "zlib-sync": "^0.1.7"
+  }
+}
