@@ -9,17 +9,17 @@ const rest = new REST({ version: '10' }).setToken(process.env.BOT_TOKEN);
 
 (async () => {
   try {
-    console.log('Started refreshing application (/) commands.');
+    console.log('명령어 목록 갱신 시도');
     await rest.put(Routes.applicationCommands(process.env.BOT_CLIENT_ID), { body: CommandList });
 
-    console.log('Successfully reloaded application (/) commands.');
+    console.log('명령어 목록이 갱신됨');
   } catch (error) {
     console.error(error);
   }
 })();
 
 client.on('ready', () => {
-  console.log(`Logged in as ${client.user.tag}!`);
+  console.log(`${client.user.tag}로 로그인되었습니다.`);
 });
 
 client.on('interactionCreate', async interaction => {
