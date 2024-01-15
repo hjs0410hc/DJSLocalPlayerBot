@@ -2,15 +2,15 @@ const { createAudioPlayer,createAudioResource,joinVoiceChannel,AudioPlayerStatus
 const {ActivityType} = require('discord.js');
 const fs = require('node:fs');
 const path = require('node:path');
+const ytdl = require('ytdl-core');
 
 var musicPath = ('audio');
 const rootPath = musicPath;
 var musicFiles = [];
 
 const supportedExt = [
-    ".mp3",".flac",".m4a",".wav",".wma",".aac",".ogg",".webm"
+    ".mp3",".flac",".m4a",".wav",".wma",".aac",".ogg",".webm",".ytd"
 ]
-
 
 function readMusicFiles(){
     musicFiles = [];
@@ -101,6 +101,18 @@ const MusicCommandList = [
       {
         name: 'next',
         description: '다음 곡 재생하기'
+      },
+      {
+        name:'ytplay',
+        description: '유튜브 음악 재생하기',
+        options:[
+            {
+                type:3,
+                name:'url',
+                description:'유튜브 URL을 입력하세요.',
+                required:true
+            }
+        ]
       }
 ];
 
@@ -125,48 +137,48 @@ MusicCommands.set('play',async(interaction)=>{
     const audioPlayer = createAudioPlayer();
     voiceConnection.subscribe(audioPlayer);
     var audioResource;
+    var filepath;
     var idx = interaction.options.getInteger('idx');
     if(idx == null){
         if(queue.length === 0){
             return await interaction.reply('❌ 재생목록이 비어있습니다.')
         }else{
-            idx = queue.shift();
-            audioResource = createAudioResource(path.join(musicPath,musicFiles[idx]),{inlineVolume:true});
+            filepath = queue.shift();
+            audioResource = createAudioResource(filepath,{inlineVolume:true});
         }
     }else{
-        audioResource = createAudioResource(path.join(musicPath,musicFiles[idx]),{inlineVolume:true});
+        filepath = path.join(musicPath,musicFiles[idx]);
+        audioResource = createAudioResource(filepath,{inlineVolume:true});
     }
-    if(!supportedExt.includes(path.extname(musicFiles[idx]))){
+    if(!supportedExt.includes(path.extname(filepath))){
         interaction.client.user.setActivity("");
         voiceConnection.destroy();
         return await interaction.reply("❌ 잘못된 파일을 재생하려 했습니다.");
     }
+    
     audioResource.volume.volume = curVolume;
-    audioPlayer.on(AudioPlayerStatus.Idle,async ()=>{ // 오류나면 바로 여기로 와버려요 .
+    audioPlayer.on(AudioPlayerStatus.Idle,async ()=>{
         if(queue.length===0){
             interaction.client.user.setActivity("");
             voiceConnection.destroy();
             await interaction.followUp('ℹ 재생이 완료되어 음성 채널에서 나갔습니다.');
         }else{
-            idx = queue.shift();
-            audioResource = createAudioResource(path.join(musicPath,musicFiles[idx]),{inlineVolume:true});
+            filepath = queue.shift();
+            audioResource = createAudioResource(filepath,{inlineVolume:true});
             audioResource.volume.volume = curVolume;
             try{
                 audioPlayer.play(audioResource);
             }catch(e){
                 return await interaction.reply(e);
             }
-            clientUser.setActivity(musicFiles[idx],{type:ActivityType.Listening})
-            await interaction.followUp('ℹ 다음 재생 음악: '+musicFiles[idx])
+            clientUser.setActivity(filepath,{type:ActivityType.Listening})
+            await interaction.followUp('ℹ 다음 재생 음악: '+filepath)
         }
     })
-    try{
-        audioPlayer.play(audioResource);
-    }catch(e){
-        return await interaction.reply(e);
-    }
-    clientUser.setActivity(musicFiles[idx],{type:ActivityType.Listening})
-    await interaction.reply('ℹ 음악 재생: '+musicFiles[idx])
+    audioPlayer.play(audioResource);
+    
+    clientUser.setActivity(filepath,{type:ActivityType.Listening})
+    await interaction.reply('ℹ 음악 재생: '+filepath)
     
 });
 MusicCommands.set('pause',async(interaction)=>{
@@ -241,14 +253,17 @@ MusicCommands.set('add',async(interaction)=>{
         }
         await interaction.reply('ℹ 현재 경로: '+musicPath);
     }else{
-        queue.push(idx);
-        await interaction.reply('✅재생목록에 추가됨: '+musicFiles[idx])
+        if(!supportedExt.includes(path.extname(temp))){
+            return await interaction.reply("❌ 잘못된 파일을 추가하려 했습니다.");
+        }
+        queue.push(temp);
+        await interaction.reply('✅재생목록에 추가됨: '+temp)
     }
 });
 MusicCommands.set('queue',async(interaction)=>{
     var msg = "```\n";
     for(const [index,value] of queue.entries()){
-        msg = msg +index + ": " + musicFiles[value] + "\n"; 
+        msg = msg +index + ": " + value + "\n"; 
     }
     msg = msg+"```";
     await interaction.reply("ℹ 현재 재생목록:\n"+msg)
@@ -265,6 +280,28 @@ MusicCommands.set('next',async(interaction)=>{
     player.emit('idle');
     await interaction.deferReply();
     await interaction.deleteReply();
+});
+MusicCommands.set('ytplay',async(interaction)=>{
+    const voiceConnection = getVoiceConnection(interaction.guildId)
+    if(!voiceConnection){
+        return interaction.reply("❌ 봇이 음성채널과 연결되어 있지 않습니다.");
+    }
+    const audioPlayer = createAudioPlayer();
+    voiceConnection.subscribe(audioPlayer);
+    var audioResource;
+    const url = interaction.options.getString('url')
+    audioResource = createAudioResource(ytdl(url,{
+        quality:'highestaudio',
+        dlChunkSize:0
+    }),{inlineVolume:true});
+    audioResource.volume.volume = curVolume;
+    audioPlayer.on(AudioPlayerStatus.Idle,async ()=>{
+        voiceConnection.destroy();
+        await interaction.followUp('ℹ 재생이 완료되어 음성 채널에서 나갔습니다.');
+    })
+    audioPlayer.play(audioResource);
+    
+    await interaction.reply('ℹ 유튜브 음악 재생 중')
 });
 
 module.exports = { MusicCommandList , MusicCommands };

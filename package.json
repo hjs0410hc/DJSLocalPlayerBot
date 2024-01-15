@@ -31,6 +31,7 @@
     "erlpack": "^0.1.4",
     "libsodium-wrappers": "^0.7.10",
     "utf-8-validate": "^5.0.9",
+    "ytdl-core": "^4.11.1",
     "zlib-sync": "^0.1.7"
   }
 }
